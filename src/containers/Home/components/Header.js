@@ -11,10 +11,10 @@ export default class Header extends Component {
           <img alt="logoHeader" src={logo} />
         </div>
         <div className="link">
-          <a target="_blank" rel="noopener noreferrer" href="https://github.com/ReactMaker">
+          <a target="_blank" rel="noopener noreferrer" href="https://github.com/AprilJoy">
             <img alt="github" src={github} />
           </a>
-          <a target="_blank" rel="noopener noreferrer" href="https://facebook.com/reactmaker">
+          <a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/shaoyang.dong">
             <img alt="facebook" src={facebook} />
           </a>
         </div>

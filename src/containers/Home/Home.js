@@ -1,4 +1,7 @@
+// absolute
 import React, { Component } from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
+// relative
 import User from './User';
 import Header from './components/Header.js';
 import Content from './components/Content.js';
