@@ -1,10 +1,34 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Jumbotron, Card, CardImg, CardText, CardBlock,
-  CardTitle, CardSubtitle } from 'reactstrap';
+  CardTitle, CardSubtitle, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import AlbumJSON from './Album.json';
 
 export default class Content extends Component {
+  state = {
+    modal: false,
+    cart: [],
+  }
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+
+  addToCart = (product) => {
+    const newCart = this.state.cart;
+    newCart.push(product);
+    // update show
+    this.setState({
+      cart: newCart,
+    });
+  }
+
+  checkout = (totalPrice) => {
+    alert(`已从您的信用卡扣除${totalPrice}元`);
+  }
+
   render() {
+    const TotalPrice = this.state.cart.reduce((acc, item) => acc + item.price, 0);
     return (
       <Container>
         <Row>
@@ -25,7 +49,9 @@ export default class Content extends Component {
               </p>
               <hr className="my-2" />
               <p className="lead">
-                <Button color="primary" >購物車</Button>
+                <Button color="primary" onClick={this.toggle}>
+                  購物車({ this.state.cart.length})
+                </Button>
               </p>
             </Jumbotron>
           </Col>
@@ -39,13 +65,50 @@ export default class Content extends Component {
                   <CardTitle>{product.title}</CardTitle>
                   <CardSubtitle>价格： {product.price}</CardSubtitle>
                   <CardText>{product.desc}</CardText>
-                  <Button>购买</Button>
+                  <Button
+                    disabled={this.state.cart.find(item => item.id === product.id)}
+                    onClick={() => this.addToCart(product)}
+                  >
+                    购买
+                  </Button>
                 </CardBlock>
               </Card>
             </Col>
 
           ))}
         </Row>
+
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader toggle={this.toggle}>购物车</ModalHeader>
+          <ModalBody>
+            <Table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>品项</th>
+                  <th>价格</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  this.state.cart.map((item, index) => (
+                    <tr>
+                      <th scope="row">{index + 1}</th>
+                      <td>{item.title}</td>
+                      <td>{item.price}</td>
+                    </tr>
+
+                  ))
+                }
+              </tbody>
+            </Table>
+            <p>总价{TotalPrice}</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={() => this.checkout(TotalPrice)}>购买</Button>{' '}
+            <Button color="secondary" onClick={this.toggle}>取消</Button>
+          </ModalFooter>
+        </Modal>
       </Container>
     );
   }
