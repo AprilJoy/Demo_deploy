@@ -10,7 +10,7 @@ export default class Cart extends Component {
 
   render() {
     const { cart, deleteCartItem } = this.props;
-    const totalPrice = cart.reduce((acc, item) => (acc = item.price), 0);
+    const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
     return (
       <div>
         <Table>
