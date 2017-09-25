@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, Jumbotron, Card, CardImg, CardText, CardBlock,
-  CardTitle, CardSubtitle, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
+import { Container, Row, Col, Button, Jumbotron, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import AlbumJSON from './Album.json';
+import Product from './Product';
+import Cart from './Cart';
 
 export default class Content extends Component {
   state = {
     modal: false,
     cart: [],
+    album: [],
+  }
+
+  // 呼叫API
+  componentDidMount = async () => {
+    const data = await fetch('https://demojson.herokuapp.com/cart').then(response => response.json());
+
+    this.setState({
+      album: data,
+    });
   }
   toggle = () => {
     this.setState({
@@ -25,6 +36,15 @@ export default class Content extends Component {
 
   checkout = (totalPrice) => {
     alert(`已从您的信用卡扣除${totalPrice}元`);
+  }
+
+  deleteCartItem = (index) => {
+    const cart = this.state.cart;
+    cart.splice(index, 1);
+
+    this.setState({
+      cart
+    });
   }
 
   render() {
@@ -57,22 +77,13 @@ export default class Content extends Component {
           </Col>
         </Row>
         <Row>
-          { AlbumJSON.map(product => (
+          { this.state.album.map(product => (
             <Col xs="12" md="4">
-              <Card>
-                <CardImg top width="100%" src={product.img} alt="Card image cap" />
-                <CardBlock>
-                  <CardTitle>{product.title}</CardTitle>
-                  <CardSubtitle>价格： {product.price}</CardSubtitle>
-                  <CardText>{product.desc}</CardText>
-                  <Button
-                    disabled={this.state.cart.find(item => item.id === product.id)}
-                    onClick={() => this.addToCart(product)}
-                  >
-                    购买
-                  </Button>
-                </CardBlock>
-              </Card>
+              <Product
+                product={product}
+                cart={this.state.cart}
+                addToCart={this.addToCart}
+              />
             </Col>
 
           ))}
@@ -81,31 +92,16 @@ export default class Content extends Component {
         <Modal isOpen={this.state.modal} toggle={this.toggle}>
           <ModalHeader toggle={this.toggle}>购物车</ModalHeader>
           <ModalBody>
-            <Table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>品项</th>
-                  <th>价格</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  this.state.cart.map((item, index) => (
-                    <tr>
-                      <th scope="row">{index + 1}</th>
-                      <td>{item.title}</td>
-                      <td>{item.price}</td>
-                    </tr>
-
-                  ))
-                }
-              </tbody>
-            </Table>
-            <p>总价{TotalPrice}</p>
+            <Cart
+              cart={this.state.cart}
+              deleteCartItem={this.deleteCartItem}
+            />
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={() => this.checkout(TotalPrice)}>购买</Button>{' '}
+            <Button
+              disabled={this.state.cart.length === 0}
+              color="primary" onClick={() => this.checkout(TotalPrice)}>购买
+            </Button>{' '}
             <Button color="secondary" onClick={this.toggle}>取消</Button>
           </ModalFooter>
         </Modal>
